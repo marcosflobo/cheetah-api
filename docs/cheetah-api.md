@@ -37,13 +37,22 @@ Get a user information
 `GET /v1/user/user_id`
 
 Login
-`POST /v1/login`
+`POST /v1/authenticate`
 
 Add user to team
 `GET /v1/team/adduser/team_id/user_id`
 
 ## Headers
-TODO
+For every single request, the client must include the headers below:
+```javascript
+{
+    "headers": {
+        "token": "avalidtoken",
+        "User-Agent": "Contains a characteristic string that allows the network protocol peers to identify the application type, operating system, software vendor or software version of the requesting software user agent.",
+        "Host": "Specifies the domain name of the server (for virtual hosting), and (optionally) the TCP port number on which the server is listening."
+    }
+}
+```
 
 ## Common responses
 ### 401 Unauthorized
@@ -88,11 +97,30 @@ TODO
 TODO
 ### Response
 TODO
-## Login
+
+## Authenticate
+Process to authenticate using user and password. From this, you will take a valid token to be used in all your requests.
 ### Request
-TODO
-### Response
-TODO
+`POST /v1/authenticate`
+#### Body
+```javascript
+{
+    "authenticate": {
+        "username": "theusername",
+        "password": "theencriptedpassw",
+    }
+}
+```
+### Response OK
+```javascript
+{
+	"response": {
+		"status": 200,
+		"message": "Authenticated",
+		"token": "THETOKEN"
+	}
+}
+```
 ## Profiles
 Here we are talking about user roles
 ### Request

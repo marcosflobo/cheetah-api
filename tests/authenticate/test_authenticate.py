@@ -131,8 +131,7 @@ class TestAuthenticate(TestCase):
             # To be sure that the exception is raised
             self.assertTrue(1 == 0)
         except Exception:
-            pass
-        self.assertEqual(exp_token, token)
+            self.assertEqual(exp_token, token)
         mock_get_user_from_db.assert_called_once_with(self.user, self.pw)
 
 

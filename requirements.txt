@@ -1,3 +1,4 @@
+ConfigParser
 setuptools
 nose
 sphinx

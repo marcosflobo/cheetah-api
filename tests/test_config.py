@@ -28,7 +28,7 @@ class TestConfig(TestCase):
 
     def test_read_data_raises_exception_when_no_sections_found(self):
         """Test read_data raises exception when no sections are found"""
-        fh = io.BytesIO('Some test data without sections')
+        fh = io.BytesIO(self.io_bytesio('Some test data without sections'))
 
         with self.assertRaises(MissingSectionHeaderError):
             self.cr.read_data(fh)
@@ -36,7 +36,7 @@ class TestConfig(TestCase):
     def test_read_data_with_iostream_reads_correctly(self):
         """Test read_data handles iostream inputs properly"""
         expected_section = ['GENERAL']
-        fh = io.BytesIO(general_data)
+        fh = io.BytesIO(self.io_bytesio(general_data))
 
         self.cr.read_data(fh)
         parser = self.cr.get_parser()
@@ -85,7 +85,7 @@ class TestConfig(TestCase):
 
     def test_map_section_raises_exception_when_not_found(self):
         """Test map_section raises exception when section not found"""
-        fh = io.BytesIO('[NON_DESIRED_SECTION]\ndata = some test data without desired section')
+        fh = io.BytesIO(self.io_bytesio('[NON_DESIRED_SECTION]\ndata = some test data without desired section'))
         self.cr.read_data(fh)
 
         with self.assertRaises(NoSectionError):
@@ -96,7 +96,7 @@ class TestConfig(TestCase):
         expected_log_format = '%(whateverformat)s'
         expected_log_file = '/var/log/cheetah-api/cheetah-api.log'
         expected_log_level = 'CRITICAL'
-        fh = io.BytesIO(general_data)
+        fh = io.BytesIO(self.io_bytesio(general_data))
         self.cr.read_data(fh)
 
         general_obj = self.cr.read_general()
@@ -104,6 +104,16 @@ class TestConfig(TestCase):
         self.assertEqual(expected_log_format, general_obj["log_format"])
         self.assertEqual(expected_log_file, general_obj["log_file"])
         self.assertEqual(expected_log_level, general_obj["log_level"])
+
+    def io_bytesio(self, str):
+        """
+        Makes compatibility Py2/Py3
+        :param str:
+        :return:
+        """
+        if six.PY2:
+            return str
+        return bytes(str, 'utf8')
 
     def tearDown(self):
         self.cr = None

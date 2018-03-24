@@ -1,10 +1,14 @@
-import ConfigParser
+from cheetahapi.core.config import Config
+import six
+if six.PY2:
+    from ConfigParser import RawConfigParser, MissingSectionHeaderError, NoSectionError
+else:
+    from configparser import RawConfigParser, MissingSectionHeaderError, NoSectionError
 import io
 import os
 import tempfile
 from unittest import TestCase
 
-from cheetahapi.core.config import Config
 
 general_data = '''[GENERAL]
 log_format = %(whateverformat)s
@@ -20,13 +24,13 @@ class TestConfig(TestCase):
         """Test get_parser returns proper ConfigParser instance"""
         parser = self.cr.get_parser()
 
-        self.assertIsInstance(parser, ConfigParser.RawConfigParser)
+        self.assertIsInstance(parser, RawConfigParser)
 
     def test_read_data_raises_exception_when_no_sections_found(self):
         """Test read_data raises exception when no sections are found"""
         fh = io.BytesIO('Some test data without sections')
 
-        with self.assertRaises(ConfigParser.MissingSectionHeaderError):
+        with self.assertRaises(MissingSectionHeaderError):
             self.cr.read_data(fh)
 
     def test_read_data_with_iostream_reads_correctly(self):
@@ -84,7 +88,7 @@ class TestConfig(TestCase):
         fh = io.BytesIO('[NON_DESIRED_SECTION]\ndata = some test data without desired section')
         self.cr.read_data(fh)
 
-        with self.assertRaises(ConfigParser.NoSectionError):
+        with self.assertRaises(NoSectionError):
             self.cr.map_section('GENERAL')
 
     def test_read_general_returns_correct_object(self):

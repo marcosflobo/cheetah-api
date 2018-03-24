@@ -1,4 +1,8 @@
-from ConfigParser import RawConfigParser
+import six
+if six.PY2:
+    from ConfigParser import RawConfigParser
+else:
+    from configparser import RawConfigParser
 
 
 class Config(object):

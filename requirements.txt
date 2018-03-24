@@ -4,3 +4,4 @@ sphinx
 unittest2
 mock
 mysqlclient
+flask

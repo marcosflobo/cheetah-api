@@ -15,6 +15,14 @@ log_format = %(whateverformat)s
 log_file = /var/log/cheetah-api/cheetah-api.log
 log_level=CRITICAL'''
 
+database_data = '''[DATABASE]
+db_driver = postgresql
+db_host = 0.0.0.0
+db_port = 5432
+db_name = cheetah-api
+db_username = cheetah-api
+db_pwd = 1234'''
+
 class TestConfig(TestCase):
 
     def setUp(self):
@@ -104,6 +112,26 @@ class TestConfig(TestCase):
         self.assertEqual(expected_log_format, general_obj["log_format"])
         self.assertEqual(expected_log_file, general_obj["log_file"])
         self.assertEqual(expected_log_level, general_obj["log_level"])
+
+    def test_read_database_returns_correct_object(self):
+        """Test read_database returns correct DATABASE data dict"""
+        exp_db_driver = 'postgresql'
+        exp_db_host = '0.0.0.0'
+        exp_db_port = 5432
+        exp_db_name = 'cheetah-api'
+        exp_db_username = 'cheetah-api'
+        exp_db_pwd = '1234'
+        fh = io.BytesIO(self.io_bytesio(database_data))
+        self.cr.read_data(fh)
+
+        database_obj = self.cr.read_database()
+
+        self.assertEqual(exp_db_driver, database_obj["db_driver"])
+        self.assertEqual(exp_db_host, database_obj["db_host"])
+        self.assertEqual(exp_db_port, database_obj["db_port"])
+        self.assertEqual(exp_db_name, database_obj["db_name"])
+        self.assertEqual(exp_db_username, database_obj["db_username"])
+        self.assertEqual(exp_db_pwd, database_obj["db_pwd"])
 
     def io_bytesio(self, str):
         """

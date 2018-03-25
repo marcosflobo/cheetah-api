@@ -2,7 +2,7 @@ from unittest import TestCase
 import mock
 
 from cheetahapi.core.db.db_authenticate import DbAuthenticate
-from factories.factory_fixtures import TokenFactory, session
+from tests.factories.factory_fixtures import TokenFactory, session
 
 
 class TestDbAuthenticate(TestCase):

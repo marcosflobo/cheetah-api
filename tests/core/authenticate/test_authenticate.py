@@ -43,7 +43,7 @@ class TestAuthenticate(TestCase):
         """Test a token is valid"""
         auth = Authenticate()
         auth.set_token_days_valid(1)
-        exp_get_token_from_db = {"date": "2018-03-23"}
+        exp_get_token_from_db = {"created": "2018-03-23"}
         with mock.patch("cheetahapi.core.authenticate.Authenticate.get_token_from_db",
                         return_value=exp_get_token_from_db):
             is_valid = auth.is_valid_token(self.exp_token)
@@ -56,7 +56,7 @@ class TestAuthenticate(TestCase):
         """Test a token is not valid"""
         auth = Authenticate()
         auth.set_token_days_valid(1)
-        exp_get_token_from_db = {"date": "2018-03-22"}
+        exp_get_token_from_db = {"created": "2018-03-22"}
         with mock.patch("cheetahapi.core.authenticate.Authenticate.get_token_from_db",
                         return_value=exp_get_token_from_db):
             is_valid = auth.is_valid_token(self.exp_token)

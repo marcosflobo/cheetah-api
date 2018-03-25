@@ -47,7 +47,7 @@ class Authenticate(object):
         :return: True if the token string is valid, False in other case
         """
         token_obj = self.get_token_from_db(token)
-        return self.token_date_not_expired(token_obj["date"])
+        return self.token_date_not_expired(token_obj["created"])
 
     def token_date_not_expired(self, token_date_creation):
         """

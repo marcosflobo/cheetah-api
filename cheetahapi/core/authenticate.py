@@ -1,11 +1,20 @@
 from datetime import datetime
 
+from cheetahapi.core.db.db_authenticate import DbAuthenticate
+
 
 class Authenticate(object):
     """
     Number of days that a token is valid. In the future, this value will come from config file
     """
     token_days_valid = 5
+
+    db_manager = None
+
+    db_config_dict = {}
+
+    def __init__(self):
+        self.load_db_manager()
 
     def authenticate(self, user, password):
         """
@@ -47,7 +56,7 @@ class Authenticate(object):
         :return: True if the token string is valid, False in other case
         """
         token_obj = self.get_token_from_db(token)
-        return self.token_date_not_expired(token_obj["created"])
+        return self.token_date_not_expired(token_obj.created)
 
     def token_date_not_expired(self, token_date_creation):
         """
@@ -62,11 +71,25 @@ class Authenticate(object):
         return datetime.today()
 
     def get_token_from_db(self, token):
-        # TODO
-        pass
+        """
+        Returns the token information for token string
+        :param token: Token string
+        :return: Token object from model.py
+        """
+        db_manager = DbAuthenticate(self.get_db_config_dict())
+        return db_manager.get_token(token)
 
     def get_token_days_valid(self):
         return self.token_days_valid
 
     def set_token_days_valid(self, num_days):
         self.token_days_valid = num_days
+
+    def load_db_manager(self):
+        self.db_manager = DbAuthenticate(self.get_db_config_dict())
+
+    def set_db_config_dict(self, db_config_dict):
+        self.db_config_dict = db_config_dict
+
+    def get_db_config_dict(self):
+        return self.db_config_dict

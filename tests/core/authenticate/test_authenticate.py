@@ -3,6 +3,7 @@ from unittest import TestCase
 import mock
 
 from cheetahapi.core.authenticate import Authenticate
+from cheetahapi.core.db.model import Token
 
 
 class TestAuthenticate(TestCase):
@@ -18,7 +19,8 @@ class TestAuthenticate(TestCase):
     def test_token_has_valid_date(self, mock_get_today_date):
         """Test to check when the token has a valid date and it does not exceed the number of days when it's valid"""
         token_creation_date_string = "2018-03-23"
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
         auth.set_token_days_valid(1)
 
         ret = auth.token_date_not_expired(token_creation_date_string)
@@ -30,7 +32,8 @@ class TestAuthenticate(TestCase):
     def test_token_has_not_valid_date(self, mock_get_today_date):
         """Test to check when the token has not a valid date and exceeds the number of days when it's valid"""
         token_creation_date_string = "2018-03-22"
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
         auth.set_token_days_valid(1)
 
         ret = auth.token_date_not_expired(token_creation_date_string)
@@ -41,9 +44,11 @@ class TestAuthenticate(TestCase):
                 return_value=datetime.strptime("2018-03-24", "%Y-%m-%d"))
     def test_is_valid_token(self, mock_get_today_date):
         """Test a token is valid"""
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
         auth.set_token_days_valid(1)
-        exp_get_token_from_db = {"created": "2018-03-23"}
+        exp_get_token_from_db = Token()
+        exp_get_token_from_db.created = "2018-03-23"
         with mock.patch("cheetahapi.core.authenticate.Authenticate.get_token_from_db",
                         return_value=exp_get_token_from_db):
             is_valid = auth.is_valid_token(self.exp_token)
@@ -54,9 +59,11 @@ class TestAuthenticate(TestCase):
                 return_value=datetime.strptime("2018-03-24", "%Y-%m-%d"))
     def test_is_invalid_token(self, mock_get_today_date):
         """Test a token is not valid"""
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
         auth.set_token_days_valid(1)
-        exp_get_token_from_db = {"created": "2018-03-22"}
+        exp_get_token_from_db = Token()
+        exp_get_token_from_db.created = "2018-03-22"
         with mock.patch("cheetahapi.core.authenticate.Authenticate.get_token_from_db",
                         return_value=exp_get_token_from_db):
             is_valid = auth.is_valid_token(self.exp_token)
@@ -73,7 +80,8 @@ class TestAuthenticate(TestCase):
     def test_authenticate_ok(self, mock_get_user_from_db, mock_get_token_user_id,
                              mock_is_valid_token, mock_create_new_token):
         """Test to check authentication process is working"""
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
 
         token = auth.authenticate(self.user, self.pw)
         self.assertFalse(mock_create_new_token.called)
@@ -92,7 +100,8 @@ class TestAuthenticate(TestCase):
     def test_authenticate_ok_create_new_token_from_none_token(self, mock_get_user_from_db, mock_get_token_user_id,
                                                               mock_is_valid_token, mock_create_new_token):
         """Test to check authentication process is working creating a new token because there was not previous token"""
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
 
         token = auth.authenticate(self.user, self.pw)
         mock_get_user_from_db.assert_called_once_with(self.user, self.pw)
@@ -112,7 +121,8 @@ class TestAuthenticate(TestCase):
     def test_authenticate_ok_create_new_token_from_invalid_token(self, mock_get_user_from_db, mock_get_token_user_id,
                                                                  mock_is_valid_token, mock_create_new_token):
         """Test to check authentication process is working creating a new token because previous token expired"""
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
 
         token = auth.authenticate(self.user, self.pw)
         mock_get_user_from_db.assert_called_once_with(self.user, self.pw)
@@ -124,7 +134,8 @@ class TestAuthenticate(TestCase):
     @mock.patch("cheetahapi.core.authenticate.Authenticate.get_user_from_db",
                 return_value=None)
     def test_authenticate_error_wrong_user_or_passwd(self, mock_get_user_from_db):
-        auth = Authenticate()
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
         exp_token = token = 0
         try:
             token = auth.authenticate(self.user, self.pw)
@@ -133,6 +144,20 @@ class TestAuthenticate(TestCase):
         except Exception:
             self.assertEqual(exp_token, token)
         mock_get_user_from_db.assert_called_once_with(self.user, self.pw)
+
+    @mock.patch("cheetahapi.core.db.db_authenticate.DbAuthenticate.__init__", return_value=None)
+    def test_get_token_from_db(self, mock_db_init):
+        """Test get token from database filtering by token string, which is unique"""
+        with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
+            auth = Authenticate()
+        exp_token = Token()
+        exp_token.token = "foo-token"
+        with mock.patch("cheetahapi.core.db.db_authenticate.DbAuthenticate.get_token", return_value=exp_token)\
+                as mock_get_token:
+            ret = auth.get_token_from_db(exp_token.token)
+            self.assertEqual(exp_token.token, ret.token)
+            mock_get_token.assert_called_once_with(exp_token.token)
+            mock_db_init.assert_called_once()
 
 
 if __name__ == '__main__':

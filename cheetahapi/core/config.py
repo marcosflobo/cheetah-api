@@ -10,7 +10,7 @@ class Config(object):
     Represent the information contained in the configuration file
     """
     DEFAULT_CONFIG_FILE = '/etc/cheetah-api/config.conf'
-    CONFIG_SECTIONS = {'general': 'GENERAL', 'host': 'HOST'}
+    CONFIG_SECTIONS = {'general': 'GENERAL', 'database': 'DATABASE'}
 
     def __init__(self):
         """
@@ -18,6 +18,7 @@ class Config(object):
         """
         self.config_parser = RawConfigParser()
         self.general = None
+        self.database = None
 
     def get_parser(self):
         """
@@ -34,6 +35,14 @@ class Config(object):
         :return: dict with data from GENERAL section
         """
         return self.general
+
+    def get_database(self):
+        """
+        Get the database information attribute
+
+        :return: dict with data from DATABASE section
+        """
+        return self.database
 
     def read_file(self, filename):
         """
@@ -75,11 +84,22 @@ class Config(object):
         """
         return self.map_section(self.CONFIG_SECTIONS['general'])
 
+    def read_database(self):
+        """
+        Get database data contained in the config file
+
+        :return: Data object from DATABASE section in the config file
+        """
+        ret = self.map_section(self.CONFIG_SECTIONS['database'])
+        ret["db_port"] = int(ret["db_port"])
+        return ret
+
     def load_config_data(self):
         """
         Load configuration data
         """
         self.general = self.read_general()
+        self.database = self.read_database()
 
     def load_config_file(self, config_file=DEFAULT_CONFIG_FILE):
         """

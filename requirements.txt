@@ -5,5 +5,8 @@ nose
 sphinx
 unittest2
 mock
-mysqlclient
+factory_boy
+faker
+sqlalchemy
+psycopg2
 flask

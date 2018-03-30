@@ -11,7 +11,7 @@
     * [Countries](#countries)
     * [Bank Holidays](#bank-holidays)
     * [Holidays](#holidays)
-    * [Login](#login)
+    * [Authenticate](#Authenticate)
     * [Profiles](#profiles)
     * [Projects](#projects)
     * [Releases](#releases)
@@ -56,7 +56,7 @@ For every single request, the client must include the headers below:
 
 ## Common responses
 ### 401 Unauthorized
-All API calls, except POST /v1/login, can return this response
+All API calls, except POST /v1/authenticate, can return this response
 ```javascript
 {
 	"response": {
@@ -66,12 +66,22 @@ All API calls, except POST /v1/login, can return this response
 }
 ```
 ### 403 Forbidden
-All API calls, except POST /v1/login, can return this response
+All API calls, except POST /v1/authenticate, can return this response
 ```javascript
 {
 	"response": {
 		"status": 401,
 		"message": "Forbidden action"
+	}
+}
+```
+### 405 Method not allowed
+All API calls can return this response
+```
+{
+	"response": {
+		"status": 405,
+		"message": "Method Not Allowed"
 	}
 }
 ```

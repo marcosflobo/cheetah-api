@@ -1,6 +1,7 @@
 """
 Datamodel for sqlalchemy
 """
+import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
@@ -16,8 +17,8 @@ class Team(Base):
     id = Column(Integer, primary_key=True)
     users = relationship("User", secondary="userteam")
     name = Column(String(255), nullable=False, unique=True)
-    created = Column(DateTime)
-    modified = Column(DateTime)
+    created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    modified = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
 class Token(Base):
@@ -28,8 +29,8 @@ class Token(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     token = Column(String(64), nullable=False, unique=True)
-    created = Column(DateTime)
-    modified = Column(DateTime)
+    created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    modified = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
 class User(Base):
@@ -46,8 +47,8 @@ class User(Base):
     username = Column(String(255), nullable=False, unique=True)
     pw = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
-    created = Column(DateTime)
-    modified = Column(DateTime)
+    created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    modified = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
 class Country(Base):
@@ -58,8 +59,8 @@ class Country(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False, unique=True)
     users = relationship(User, collection_class=set)
-    created = Column(DateTime)
-    modified = Column(DateTime)
+    created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    modified = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
 class Profile(Base):
@@ -70,8 +71,8 @@ class Profile(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
     users = relationship(User, collection_class=set)
-    created = Column(DateTime)
-    modified = Column(DateTime)
+    created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    modified = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
 class Userteam(Base):

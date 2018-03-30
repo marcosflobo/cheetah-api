@@ -16,9 +16,10 @@ from cheetahapi.core.db.model import *
 Base.metadata.create_all(engine)
 
 
-class UserFactory(factory.Factory):
+class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = User
+        sqlalchemy_session = session   # the SQLAlchemy session object
 
     id = factory.Sequence(lambda n: n)
     profile_id = factory.Sequence(lambda n: n)

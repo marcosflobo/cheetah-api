@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, request, abort, jsonify
 
 import sys
 import getopt
 
 
 from core.config import Config
+from dispacher import Dispacher
 
 app = Flask(__name__)
 
@@ -57,6 +58,20 @@ except getopt.GetoptError:
     sys.exit(-1)
 
 config = read_configuration(params["-c"])
+
+
+def get_json_response(response):
+    return jsonify(response.to_json())
+
+
+@app.route("/v1/authenticate", methods = ['POST'])
+def authenticate():
+    if not request.is_json:
+        abort(400)
+    dispacher = Dispacher(config)
+    response = dispacher.authenticate(request.get_json())
+    print request.get_json()
+    return get_json_response(response)
 
 
 @app.route("/ping")

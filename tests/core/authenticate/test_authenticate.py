@@ -202,8 +202,8 @@ class TestAuthenticate(TestCase):
 
     @mock.patch("cheetahapi.core.db.db_authenticate.DbAuthenticate.get_token_user_id", return_value=None)
     @mock.patch("cheetahapi.core.db.db_authenticate.DbAuthenticate.__init__", return_value=None)
-    def test_get_token_user_id(self, mock_db_init, mock_get_token_user_id):
-        """Test Nonet token from a user id that has NOT token"""
+    def test_get_token_user_id_not_found(self, mock_db_init, mock_get_token_user_id):
+        """Test None token from a user id that has NOT token"""
         with mock.patch("cheetahapi.core.authenticate.Authenticate.load_db_manager"):
             auth = Authenticate()
         user_id = 99999

@@ -13,7 +13,9 @@ class Authenticate(object):
 
     db_config_dict = {}
 
-    def __init__(self, db_config_dict={}):
+    def __init__(self, db_config_dict=None):
+        if db_config_dict is None:
+            db_config_dict = {}
         self.set_db_config_dict(db_config_dict)
 
     def authenticate(self, user, password):

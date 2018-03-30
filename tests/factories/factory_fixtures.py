@@ -1,6 +1,6 @@
 import factory
 
-from sqlalchemy import Column, Integer, String, DateTime, Unicode, create_engine
+from sqlalchemy import Integer, String, DateTime, Unicode, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 

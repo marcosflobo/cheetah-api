@@ -14,11 +14,13 @@ class DbAuthenticate(object):
     """Database sqlalchemy session"""
     session = None
 
-    def __init__(self, db_config_dict={}):
+    def __init__(self, db_config_dict=None):
         """
         Constructor. Loads database configuration and the sqlalchemy session
         :param db_config_dict: Database configuration as dictionary
         """
+        if db_config_dict is None:
+            db_config_dict = {}
         self.set_db_config_dict(db_config_dict)
         self.load_db_session()
 

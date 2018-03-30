@@ -17,11 +17,23 @@ log_level=CRITICAL'''
 
 database_data = '''[DATABASE]
 db_driver = postgresql
-db_host = 0.0.0.0
+db_host = localhost
 db_port = 5432
 db_name = cheetah-api
 db_username = cheetah-api
 db_pwd = 1234'''
+
+
+def io_bytesio(bytes_string):
+    """
+    Makes compatibility Py2/Py3
+    :param bytes_string:
+    :return:
+    """
+    if six.PY2:
+        return bytes_string
+    return bytes(bytes_string, 'utf8')
+
 
 class TestConfig(TestCase):
 
@@ -36,7 +48,7 @@ class TestConfig(TestCase):
 
     def test_read_data_raises_exception_when_no_sections_found(self):
         """Test read_data raises exception when no sections are found"""
-        fh = io.BytesIO(self.io_bytesio('Some test data without sections'))
+        fh = io.BytesIO(io_bytesio('Some test data without sections'))
 
         with self.assertRaises(MissingSectionHeaderError):
             self.cr.read_data(fh)
@@ -44,7 +56,7 @@ class TestConfig(TestCase):
     def test_read_data_with_iostream_reads_correctly(self):
         """Test read_data handles iostream inputs properly"""
         expected_section = ['GENERAL']
-        fh = io.BytesIO(self.io_bytesio(general_data))
+        fh = io.BytesIO(io_bytesio(general_data))
 
         self.cr.read_data(fh)
         parser = self.cr.get_parser()
@@ -93,7 +105,7 @@ class TestConfig(TestCase):
 
     def test_map_section_raises_exception_when_not_found(self):
         """Test map_section raises exception when section not found"""
-        fh = io.BytesIO(self.io_bytesio('[NON_DESIRED_SECTION]\ndata = some test data without desired section'))
+        fh = io.BytesIO(io_bytesio('[NON_DESIRED_SECTION]\ndata = some test data without desired section'))
         self.cr.read_data(fh)
 
         with self.assertRaises(NoSectionError):
@@ -104,7 +116,7 @@ class TestConfig(TestCase):
         expected_log_format = '%(whateverformat)s'
         expected_log_file = '/var/log/cheetah-api/cheetah-api.log'
         expected_log_level = 'CRITICAL'
-        fh = io.BytesIO(self.io_bytesio(general_data))
+        fh = io.BytesIO(io_bytesio(general_data))
         self.cr.read_data(fh)
 
         general_obj = self.cr.read_general()
@@ -116,12 +128,12 @@ class TestConfig(TestCase):
     def test_read_database_returns_correct_object(self):
         """Test read_database returns correct DATABASE data dict"""
         exp_db_driver = 'postgresql'
-        exp_db_host = '0.0.0.0'
+        exp_db_host = 'localhost'
         exp_db_port = 5432
         exp_db_name = 'cheetah-api'
         exp_db_username = 'cheetah-api'
         exp_db_pwd = '1234'
-        fh = io.BytesIO(self.io_bytesio(database_data))
+        fh = io.BytesIO(io_bytesio(database_data))
         self.cr.read_data(fh)
 
         database_obj = self.cr.read_database()
@@ -132,16 +144,6 @@ class TestConfig(TestCase):
         self.assertEqual(exp_db_name, database_obj["db_name"])
         self.assertEqual(exp_db_username, database_obj["db_username"])
         self.assertEqual(exp_db_pwd, database_obj["db_pwd"])
-
-    def io_bytesio(self, str):
-        """
-        Makes compatibility Py2/Py3
-        :param str:
-        :return:
-        """
-        if six.PY2:
-            return str
-        return bytes(str, 'utf8')
 
     def tearDown(self):
         self.cr = None

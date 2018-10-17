@@ -70,7 +70,7 @@ def authenticate():
         abort(400)
     dispacher = Dispacher(config)
     response = dispacher.authenticate(request.get_json())
-    print request.get_json()
+    print(request.get_json())
     return get_json_response(response)
 
 

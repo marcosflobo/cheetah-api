@@ -8,6 +8,7 @@ import io
 import os
 import tempfile
 from unittest import TestCase
+import mock
 
 
 general_data = '''[GENERAL]
@@ -144,6 +145,16 @@ class TestConfig(TestCase):
         self.assertEqual(exp_db_name, database_obj["db_name"])
         self.assertEqual(exp_db_username, database_obj["db_username"])
         self.assertEqual(exp_db_pwd, database_obj["db_pwd"])
+
+    @mock.patch("cheetahapi.core.config.Config.read_database",
+                return_value={})
+    @mock.patch("cheetahapi.core.config.Config.read_general",
+                return_value={})
+    def test_load_config_data(self, mock_read_general, mock_read_database):
+        """Tests load_config_data"""
+        self.cr.load_config_data()
+        mock_read_general.assert_called_once()
+        mock_read_database.assert_called_once()
 
     def tearDown(self):
         self.cr = None

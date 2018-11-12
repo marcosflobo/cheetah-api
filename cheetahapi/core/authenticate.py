@@ -80,7 +80,7 @@ class Authenticate(object):
         """
         datetime_object = datetime.strptime(str(token_date_creation), "%Y-%m-%d %H:%M:%S.%f")
         a = (self.get_today_date() - datetime_object).days
-        return (a <= self.get_token_days_valid())
+        return a <= self.get_token_days_valid()
 
     def get_today_date(self):
         return datetime.today()

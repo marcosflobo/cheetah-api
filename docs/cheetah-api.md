@@ -41,6 +41,18 @@ Login
 
 Add user to team
 `GET /v1/team/adduser/team_id/user_id`
+### CURL examples
+Run client request
+
+```bash
+curl -d '{"authenticate":{"username":"foo","password":"foo"}}' -H "Content-Type: application/json" -X POST http://localhost:8080/v1/authenticate
+```
+
+Server response
+
+```javascript
+{"message":"Success: Authenticated","status":200,"token":"xxxxxxxxxxxxxxxxxxxxx"}
+```
 
 ## Headers
 For every single request, the client must include the headers below:
